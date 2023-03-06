@@ -50,6 +50,7 @@ class RouteRecord():
         }
 
         self.meta = {}
+        self.weather = {}
 
 
 def to_route_record(record_dict):
@@ -134,6 +135,19 @@ class StatisticsManager(object):
         route_record.meta['duration_system'] = duration_time_system
         route_record.meta['duration_game'] = duration_time_game
         route_record.meta['route_length'] = compute_route_length(config)
+
+        weather = config.agent.get_weather()
+        if weather:
+            route_record.weather["cloudiness"] = weather.cloudiness
+            route_record.weather["precipitation"] = weather.precipitation
+            route_record.weather["precipitation_deposits"] = weather.precipitation_deposits
+            route_record.weather["wind_intensity"] = weather.wind_intensity
+            route_record.weather["sun_azimuth_angle"] = weather.sun_azimuth_angle
+            route_record.weather["sun_altitude_angle"] = weather.sun_altitude_angle
+            route_record.weather["fog_density"] = weather.fog_density
+            route_record.weather["fog_distance"] = weather.fog_distance
+            route_record.weather["fog_falloff"] = weather.fog_falloff
+            route_record.weather["wetness"] = weather.wetness
 
         if self._master_scenario:
             if self._master_scenario.timeout_node.timeout:

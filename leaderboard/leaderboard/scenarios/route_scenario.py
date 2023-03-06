@@ -190,6 +190,38 @@ class RouteScenario(BasicScenario):
 
         ego_vehicle = self._update_ego_vehicle()
 
+        points = [
+            (-5.010025, 70.409996),
+            (-5.010033, 144.380020),
+            (-5.010033, 144.380020),
+            (194.989967, 209.919998),
+            (206.119980, 324.080017),
+            (206.119980, 324.080017),
+            (206.119980, 324.080017),
+            (249.600006, 324.080078),
+            (249.600006, 324.080078),
+            (68.869995, 53.030037),
+            (268.869995, 53.030037),
+            (431.990021, 44.880039),
+            (241.359985, 12.710039),
+            (241.359985, 12.710039),
+            (441.359985, 12.710039),
+            (431.990021, 118.930038),
+            (231.990021, 118.930038),
+            (431.990021, 184.470032),
+            (243.119995, 4.830009),
+            (-22.520004, 4.830000),
+            (177.479996, 4.830000),
+            (177.479996, 4.830000),
+            (-22.520004, 4.830000)
+        ]
+        for i, (x, y) in enumerate(points):
+            print(i, x, y)
+            world.debug.draw_string(location=carla.Location(x, y, 0.5), text=str(i), life_time=0)
+            for j in range(i+1):
+                world.debug.draw_line(begin=carla.Location(x, y+j, 1), end=carla.Location(x+1, y+j, 1), color=carla.Color(255, 255, 0), life_time=0)
+        assert False
+
         self.list_scenarios = self._build_scenario_instances(world,
                                                              ego_vehicle,
                                                              self.sampled_scenarios_definitions,
@@ -246,7 +278,9 @@ class RouteScenario(BasicScenario):
         elevate_transform = self.route[0][0]
         elevate_transform.location.z += 0.5
 
-        ego_vehicle = CarlaDataProvider.request_new_actor('vehicle.lincoln.mkz2017',
+        ego_vehicle = CarlaDataProvider.request_new_actor(
+                                                          # 'vehicle.lincoln.mkz2017',
+                                                          'vehicle.bmw.isetta',
                                                           elevate_transform,
                                                           rolename='hero')
 
@@ -393,7 +427,9 @@ class RouteScenario(BasicScenario):
             scenario_configuration.other_actors = list_of_actor_conf_instances
             scenario_configuration.trigger_points = [egoactor_trigger_position]
             scenario_configuration.subtype = definition['scenario_type']
-            scenario_configuration.ego_vehicles = [ActorConfigurationData('vehicle.lincoln.mkz2017',
+            scenario_configuration.ego_vehicles = [ActorConfigurationData(
+                                                                          'vehicle.bmw.isetta',
+                                                                          # 'vehicle.lincoln.mkz2017',
                                                                           ego_vehicle.get_transform(),
                                                                           'hero')]
             route_var_name = "ScenarioRouteNumber{}".format(scenario_number)
@@ -534,18 +570,18 @@ class RouteScenario(BasicScenario):
         criteria = []
         route = convert_transform_to_location(self.route)
 
-        collision_criterion = CollisionTest(self.ego_vehicles[0], terminate_on_failure=False)
+        collision_criterion = CollisionTest(self.ego_vehicles[0], terminate_on_failure=True)
 
         route_criterion = InRouteTest(self.ego_vehicles[0],
                                       route=route,
                                       offroad_max=30,
                                       terminate_on_failure=True)
-                                      
+
         completion_criterion = RouteCompletionTest(self.ego_vehicles[0], route=route)
 
         outsidelane_criterion = OutsideRouteLanesTest(self.ego_vehicles[0], route=route)
 
-        red_light_criterion = RunningRedLightTest(self.ego_vehicles[0])
+        red_light_criterion = RunningRedLightTest(self.ego_vehicles[0], terminate_on_failure=True)
 
         stop_criterion = RunningStopTest(self.ego_vehicles[0])
 

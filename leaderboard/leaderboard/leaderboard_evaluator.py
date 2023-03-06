@@ -37,6 +37,7 @@ from leaderboard.envs.sensor_interface import SensorInterface, SensorConfigurati
 from leaderboard.autoagents.agent_wrapper import  AgentWrapper, AgentError
 from leaderboard.utils.statistics_manager import StatisticsManager
 from leaderboard.utils.route_indexer import RouteIndexer
+from team_code.auto_pilot import WEATHERS, WEATHERS_IDS
 
 
 sensors_to_icons = {
@@ -269,6 +270,7 @@ class LeaderboardEvaluator(object):
             self.agent_instance = getattr(self.module_agent, agent_class_name)(args.agent_config)
             config.agent = self.agent_instance
 
+
             # Check and store the sensors
             if not self.sensors:
                 self.sensors = self.agent_instance.sensors()
@@ -311,6 +313,9 @@ class LeaderboardEvaluator(object):
         # Load the world and the scenario
         try:
             self._load_and_wait_for_world(args, config.town, config.ego_vehicles)
+            # self.world.set_weather(WEATHERS[WEATHERS_IDS[config.agent.weather_id]])
+            print("WORLD WEATHER", self.world.get_weather())
+            # assert False
             self._prepare_ego_vehicles(config.ego_vehicles, False)
             scenario = RouteScenario(world=self.world, config=config, debug_mode=args.debug)
             self.statistics_manager.set_scenario(scenario.scenario)

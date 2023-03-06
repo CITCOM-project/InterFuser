@@ -105,6 +105,7 @@ class AutoPilot(MapAgent):
 
     def _init(self):
         super()._init()
+        print("WEATHER_ID", self.weather_id)
 
         self._turn_controller = PIDController(K_P=1.25, K_I=0.75, K_D=0.3, n=40)
         self._speed_controller = PIDController(K_P=5.0, K_I=0.5, K_D=1.0, n=40)
@@ -130,6 +131,7 @@ class AutoPilot(MapAgent):
         if self.weather_id is not None:
             weather = WEATHERS[WEATHERS_IDS[self.weather_id]]
             self._world.set_weather(weather)
+            print("setting weather to", weather)
 
         if self.destory_hazard_actors:
             self.hazard_actors_dict = {}
@@ -175,6 +177,10 @@ class AutoPilot(MapAgent):
                 pos = np.array([-loc.y, loc.x])
             updated_route.append((pos, command))
         return updated_route
+
+    def get_weather(self):
+        if hasattr(self, "_world"):
+            return self._world.get_weather()
 
     def _get_angle_to(self, pos, theta, target):
         R = np.array(

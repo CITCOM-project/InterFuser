@@ -162,6 +162,8 @@ class RouteScenario(BasicScenario):
                                                              timeout=self.timeout,
                                                              debug_mode=debug_mode)
 
+
+
         super(RouteScenario, self).__init__(name=config.name,
                                             ego_vehicles=[ego_vehicle],
                                             config=config,
