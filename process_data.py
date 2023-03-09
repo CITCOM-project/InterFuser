@@ -46,9 +46,12 @@ WEATHERS_IDS = list(WEATHERS)
 import sys
 
 RESULTS_FILE = sys.argv[1]
-weather_inx = int(weather_re.search(RESULTS_FILE).group(1))
-weather = WEATHERS[WEATHERS_IDS[weather_inx]]
 
+weather_match = weather_re.search(RESULTS_FILE)
+weather = None
+if weather_match:
+    weather_inx = int(weather_match.group(1))
+    weather = WEATHERS[WEATHERS_IDS[weather_inx]]
 
 routes = {}
 
@@ -57,18 +60,20 @@ with open(RESULTS_FILE) as f:
 
 for route in results['_checkpoint']['records']:
     index = int(route.pop("index"))
-    # if "weather" not in route or route['weather'] == {}:
-    route['weather'] = {}
-    route['weather']["cloudiness"] = weather.cloudiness
-    route['weather']["precipitation"] = weather.precipitation
-    route['weather']["precipitation_deposits"] = weather.precipitation_deposits
-    route['weather']["wind_intensity"] = weather.wind_intensity
-    route['weather']["sun_azimuth_angle"] = weather.sun_azimuth_angle
-    route['weather']["sun_altitude_angle"] = weather.sun_altitude_angle
-    route['weather']["fog_density"] = weather.fog_density
-    route['weather']["fog_distance"] = weather.fog_distance
-    route['weather']["fog_falloff"] = weather.fog_falloff
-    route['weather']["wetness"] = weather.wetness
+    if route['weather']:
+        weather = route['weather']
+    else:
+        route['weather'] = {}
+        route['weather']["cloudiness"] = weather.cloudiness
+        route['weather']["precipitation"] = weather.precipitation
+        route['weather']["precipitation_deposits"] = weather.precipitation_deposits
+        route['weather']["wind_intensity"] = weather.wind_intensity
+        route['weather']["sun_azimuth_angle"] = weather.sun_azimuth_angle
+        route['weather']["sun_altitude_angle"] = weather.sun_altitude_angle
+        route['weather']["fog_density"] = weather.fog_density
+        route['weather']["fog_distance"] = weather.fog_distance
+        route['weather']["fog_falloff"] = weather.fog_falloff
+        route['weather']["wetness"] = weather.wetness
     for condition in route['weather']:
         route[condition] = route['weather'][condition]
     for infraction in route['infractions']:

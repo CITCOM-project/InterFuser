@@ -8,10 +8,17 @@ Created on Thu Mar  2 09:46:15 2023
 
 import json
 import xml.etree.ElementTree as ET
+import sys
 
-routes = ET.parse('leaderboard/data/training_routes/failed_routes.xml').getroot()
+RESULTS_FILE = sys.argv[1]
+ROUTES_FILE = sys.argv[2]
 
-with open("dataset_failed_lincoln/TCP_failed/results/routes_town01_short.json") as f:
+assert RESULTS_FILE.endswith(".json"), "Routes file should be a JSON file"
+assert ROUTES_FILE.endswith(".xml"), "Routes file should be an XML file"
+
+routes = ET.parse(ROUTES_FILE).getroot()
+
+with open(RESULTS_FILE) as f:
     results = json.load(f)
 
 assert len(results['_checkpoint']['records']) == len(routes), "MISMATCH"
@@ -19,5 +26,6 @@ assert len(results['_checkpoint']['records']) == len(routes), "MISMATCH"
 for result, route in zip(results['_checkpoint']['records'], routes):
     result['weather'] = {k: (v if k == "id" else float(v)) for k, v in route[0].attrib.items()}
 
-with open("dataset_failed_lincoln/TCP_failed/results/routes_town01_short_weather.json", 'w') as f:
+print(RESULTS_FILE.replace(".json", "_weather.json"))
+with open(RESULTS_FILE.replace(".json", "_weather.json"), 'w') as f:
     json.dump(results, f, indent=2)
